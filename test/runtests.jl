@@ -44,9 +44,6 @@ function laguerre_corrected(n, x)
     l1
 end
 
-goal12(x) = @evalpoly x 1.0 -12.0 33.0 -36.666666666666664 20.625 -6.6 1.2833333333333334 -0.15714285714285714 0.012276785714285714 -0.0006062610229276896 1.8187830687830687e-5 -3.0062530062530064e-7
-
-
 # Abramowitz and Stegun pg. 799
 LaguerreTable = [
     1 1 1 2 6 24 120 720 5040 40320 362880 3628800 39916800 479001600;
@@ -95,9 +92,8 @@ TestLaguerreTable = [
         @test all([laguerre_corrected(i-1, testvals[j]) ≈ TestLaguerreTable[i,j] for i in 1:13, j in 2:6])
     end
     @testset "Stubborn Way" begin
+        const α = 0
         @test all(eval.(a(0,i)) .≈ 1 for i in 1:12)
         @test all(eval.([a(testvals[j],i) for i in 0:12, j in 2:6]) .≈ TestLaguerreTable[:,2:6])
     end
 end
-
-goal12(x) = @horner x 1.0 -12.0 33.0 -36.666666666666664 20.625 -6.6 1.2833333333333334 -0.15714285714285714 0.012276785714285714 -0.0006062610229276896 1.8187830687830687e-5 -3.0062530062530064e-7
