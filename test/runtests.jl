@@ -1,5 +1,5 @@
 using OrthogonalPolynomials
-using Base.Test, Base.Math
+using Test, Base.Math
 
 # Laguerre
 # Abramowitz and Stegun pg. 799
@@ -494,4 +494,60 @@ const TestTableJacobi = [
             @test isapprox.(test(), TestTableJacobi; atol = 5e-5) |> all
         end
     end
+
+    @testset "Constructors" begin
+        j = Jacobi(.5,1.5,8)
+        ge = Gegenbauer(3,4)
+        go = Gegenbauer(4,5)
+        ue = ChebyshevSecondKind(4)
+        uo = ChebyshevSecondKind(5)
+        te = ChebyshevFirstKind(4)
+        to = ChebyshevFirstKind(5)
+        le = Legendre(4)
+        lo = Legendre(5)
+        he = Hermite(4)
+        ho = Hermite(5)
+        lae = Laguerre(2,4)
+        lao = Laguerre(3,5)
+
+        @test j == Jacobi{.5,1.5,8}()
+        @test ge == GegenbauerEven{3,2}()
+        @test go == GegenbauerOdd{4,2}()
+        @test ue == ChebyshevSecondKindEven{2}()
+        @test uo == ChebyshevSecondKindOdd{2}()
+        @test te == ChebyshevFirstKindEven{2}()
+        @test to == ChebyshevFirstKindOdd{2}()
+        @test le == Legendre{4}()
+        @test lo == Legendre{5}()
+        @test he == HermiteEven{2}()
+        @test ho == HermiteOdd{2}()
+        @test lae == Laguerre{2,4}()
+        @test lao == Laguerre{3,5}()
+    end
+
+    # Abramowitz pg. 790, Example 2.
+    @testset "Jacobi{.5, 1.5, 8}(2) for a, b, c, d, f" begin
+        @test_broken all([a(j,2,i) for i in 8:-1:0] .≈ [1, 1.132353, 1.366667, 1.841026, 3.008392, 6.849651, 26.44156, 223.1091, 6545.533])
+        @test all([b(j,i) for i in 8:-1:0] .== [18.0, 34.0, 48.0, 60.0, 70.0, 78.0, 84.0, 88.0, 90.0])
+        @test all([c(j,i) for i in 8:-1:0] .== [136.0, 105.0, 78.0, 55.0, 36.0, 21.0, 10.0, 3.0, 0.0])
+        @test d(j,2) ≈ 3.338470458984375
+        @test f(j,2) == -1
+        @test_broken a(j,2) ≈ 21852.07
+    end
+
+    # Abramowitz pg. 790, Example 3
+    @testset "Gegenbauer{.5, 0:6}(2.5)" begin
+        g0 = Gegenbauer(.5, 0)
+        g1 = Gegenbauer(.5, 1)
+        g2 = Gegenbauer(.5, 2)
+        g3 = Gegenbauer(.5, 3)
+        g4 = Gegenbauer(.5, 4)
+        g5 = Gegenbauer(.5, 5)
+        g6 = Gegenbauer(.5, 6)
+        @test_broken all([a(g0,2.5) a(g1,2.5) a(g2,2.5) a(g3,2.5) a(g4,2.5) a(g5,2.5) a(g6,2.5)] .≈ [1 1.25 3.65625 13.08594 50.87648 207.0649 867.7516])
+    end
+
+
+
+
 end
