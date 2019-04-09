@@ -1,5 +1,15 @@
 module OrthogonalPolynomials
 
+# 0. Our mission
+# Dear codes, should you choose to accept it, is to learn and implement the following
+# mathematical in Julia, whilst learning the magic of multiple dispatch as a design
+# paradigm. Ready? Steady? Go!
+# If you are a beginner and this code just looks like squiggles, worry not!
+# There is a video tutorial online at my youtube channel, BrainRPG.
+# Happy Hacking!
+# - Miguel Raz Guzman Macedo
+# http://people.math.sfu.ca/~cbm/aands/page_789.jpg
+
 # 1. First design - Laguerre only
 # Note the _names with underscore are used as convention for package internals.
 _d(n, α=0) = binomial(n+α, n)
@@ -79,7 +89,7 @@ function a(p :: T, x, m = params(p)[end]) where T<:OP
     return res * d(p, x)
 end
 
-function a(p :: T, x, i=
+# function a(p :: T, x, i=
 
 # 2.2 SECOND - add a little abstract type machinery to handle dispatches for even/odd cases.
 abstract type EvenOP <: OP end
@@ -218,9 +228,12 @@ end
 struct Gegenbauer{α, n} <: OP end
 struct GegenbauerEven{α, n} <: EvenOP end
 struct GegenbauerOdd{α, n} <: OddOP end
-Gegenbauer{α, n}() where {n, α} = iseven(n) ? GegenbauerEven{α, n ÷ 2}() : GegenbauerOdd{α, (n-1) ÷ 2}()
-Gegenbauer(α, n :: Int) = n >= 0 && α >= 0 ? Gegenbauer{α, n}() : throw("The degree n must be non-negative")
+function Gegenbauer(α, n :: Int)
+     n >= 0 && α >= 0 ? nothing : throw("The degree n must be non-negative")
+     iseven(n) ? GegenbauerEven{α, n ÷ 2}() : GegenbauerOdd{α, (n-1) ÷ 2}()
+end
 Gegenbauer(n :: Int) = Gegenbauer(0, n)
+Gegenbauer
 
 # We need to define a pochhammer symbol here!
 function poch(a,::Val{N}) where N
@@ -281,5 +294,12 @@ end
 # Check Jacobi-binomial, HermiteEven, HermiteOdd, LegendreE, LegendreO, ChebySO, ChebyFO, GegenbauerE, GegenbauerO
 # Strat, look at the a(j,2,0) and k(j,.5) methods
 export d,b,c,k,f,a
+export Jacobi                                                                   # J(α,β,n)
+export GegenbauerEven, GegenbauerOdd, Gegenbauer                                # C(α,n)
+export ChebyshevSecondKindEven, ChebyshevSecondKindOdd, ChebyshevSecondKind     # U(n)
+export ChebyshevFirstKindEven, ChebyshevFirstKindOdd, ChebyshevFirstKind        # T(n)
+export Legendre                                                                 # L(n)
+export HermiteOdd, HermiteEven, Hermite                                         # H(n)
+export Laguerre
 
 end # module

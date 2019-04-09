@@ -1,0 +1,8 @@
+name = "OrthogonalPolynomials"
+uuid = "43435833-aefc-53e5-96f1-ddbc87b3871e"
+license = "MIT"
+desc = "Build your own optimal orthogonal polynomials!"
+version = "1.1.0"
+
+[deps]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

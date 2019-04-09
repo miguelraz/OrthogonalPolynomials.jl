@@ -40,6 +40,53 @@ julia> @btime L₁₂(.5)
 -0.23164963886602852
 ```
 
+However, this package, right now, can do this: (Note, it is not yet *guaranteed* to be correct! This is a work in progress.)
+```
+using OrthogonalPolynomials
+j = Jacobi(.5,1.5,8) # A Jacobi polynomial of order 8, with α = .5, β = 1.5
+ge = Gegenbauer(3,4)
+go = Gegenbauer(4,5)
+ue = ChebyshevSecondKind(4)
+uo = ChebyshevSecondKind(5)
+te = ChebyshevFirstKind(4)
+to = ChebyshevFirstKind(5)
+le = Legendre(4)
+lo = Legendre(5)
+he = Hermite(4)
+ho = Hermite(5)
+lae = Laguerre(2,4)
+lao = Laguerre(3,5)
+
+julia> a(j,.5)
+-0.2225646972656308
+julia> a(ge,.5)
+-9.0
+julia> a(go,.5)
+-23.999999999999986
+julia> a(ue,.5)
+-1.0000000000000002
+julia> a(uo,.5)
+0.5999999999999999
+julia> a(te,.5)
+-0.5
+julia> a(to,.5)
+-0.4999999999999999
+julia> a(le,.5)
+-0.28906250000000006
+julia> a(lo,.5)
+0.08984375000000008
+julia> a(he,.5)
+1.0000000000000004
+julia> a(ho,.5)
+41.0
+julia> a(lae,.5)
+6.752604166666667
+julia> a(lao,.5)
+27.437239583333334
+```
+
+Which is a good start, but it's not yet "generating" a specialized function for each particular polynomial - we'll build up to that.
+
 ## Motivation and related work
 
 Orthogonal Polynomials are polynomials that appear almost everywhere in applied mathematics and sciences due to their centuries-old connections established to differential equations, group theory, numerical analysis, etc.
@@ -50,7 +97,7 @@ So why another package?
 
 First, I wanted to build my own package, and do not mind upstreaming it later on into SpecialFunctions.jl or ApproxFun.jl, if it so happens to be found a happy home.
 
-Second of all, I wanted to learn by myself and have a lightweight standalone no-dependency repository where I could simply point to others if they wanted a package that does one thing, and does it very well. Most importantly, no other packages, as known to the author at time of writing, offer the full optimizations possible for user chosen parameters, e.g., offering Legendre 17th order with α = 3, β = 9.
+Second of all, I wanted to learn by myself and have a lightweight standalone no-dependency repository where I could simply point to others if they wanted a package that does one thing, and does it well. Most importantly, no other packages, as known to the author at time of writing, offer the full optimizations possible for user chosen parameters, e.g., offering Jacobi 7th order with α = 3, β = 9 and fused multiply-add generated code with many types of floats.
 
 Third, I wanted to compare my approach to established literature and other working code and see how I fared, all of this in parallel to producing a living document of videos and notes so that others may learn from my mistakes. As a comparison, here are some benchmarks for the 12th order Laguerre polynomial with different implementations:
 
@@ -93,7 +140,7 @@ There is a couple of things you need to learn about first.
 
 2. How the formula found matches this approach, and how we our code will build up incrementally towards it.
 
-3. Why using `@generated` functions is necessary at all.
+3. Why using `@generated` functions is necessary at all and its tradeoffs with a `Val{}` based approach.
 
 The `@horner` macro works by taking a given list of coefficients to compute a polynomials and rearranging it algebraically so that it a) faster b) more precise, a classical result found in Knuth, TAOCP II. We will have to modify the macro just a tinybit so that it fits with our master formula.
 
@@ -111,7 +158,7 @@ Lastly, The codebase in this package is very much alpha (development stage). It 
 
 Our starting point is to have a Minimal Working Example (MWE) of the vanilla Laguerre polynomial - even if it is a bit wonky.
 
-First Lesson: build a basic example where your code runs, then build on top of it.
+First Lesson: build a basic example where your code runs, test to make sure it is correct, then build on top of it.
 
 The code is all stashed in `src/OrthogonalPolynomials.jl` so go and have a look at the basic machinery before moving on to `v0.0.2`.
 
