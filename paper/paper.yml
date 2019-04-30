@@ -1,0 +1,17 @@
+title: "OrthogonalPolynomials.jl: Developing a first package in almost 100 lines of Julia"
+keywords:
+  - Julia
+  - Orthogonal Polynomials
+  - Special Functions
+  - Multiple Dispatch
+  - Educational
+  - Metaprogramming
+authors:
+  - name: Miguel Raz Guzm\'an Macedo
+    orcid: 0000-0002-9610-3762
+    affiliation: 1
+affiliations:
+  - name: Universidad Nacional Aut\'onoma de M\'exico UNAM, Facultad de Ciencias
+    index: 1
+date: 24 April 2019
+bibliography: ref.bib

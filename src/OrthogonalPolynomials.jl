@@ -233,7 +233,6 @@ function Gegenbauer(α, n :: Int)
      iseven(n) ? GegenbauerEven{α, n ÷ 2}() : GegenbauerOdd{α, (n-1) ÷ 2}()
 end
 Gegenbauer(n :: Int) = Gegenbauer(0, n)
-Gegenbauer
 
 # We need to define a pochhammer symbol here!
 function poch(a,::Val{N}) where N
